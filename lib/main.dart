@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -10,10 +9,8 @@ void main() async {
   );
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,18 +26,15 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
 
   @override
   State<AttendanceScreen> createState() => _AttendanceScreenState();
 }
-
 class _AttendanceScreenState extends State<AttendanceScreen> {
   final CollectionReference _attendance =
       FirebaseFirestore.instance.collection('attendance');
-
   final List<String> students = [
     'Maria khan',
     'Sara Khan',
@@ -50,10 +44,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     'Ayesha Malik',
     'Hassan Raza',
   ];
-
   Map<String, bool> presentMap = {};
   bool _saving = false;
-
   @override
   void initState() {
     super.initState();
@@ -61,14 +53,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       presentMap[s] = false;
     }
   }
-
   String get _today => DateTime.now().toString().split(' ')[0];
-
   int get _presentCount =>
       presentMap.values.where((v) => v == true).length;
-
-  void _saveAttendance() async {
-    setState(() => _saving = true);
+void _saveAttendance() async {
+  setState(() => _saving = true);
+  try {
     await _attendance.doc(_today).set({
       'date': _today,
       'attendance': presentMap,
@@ -83,7 +73,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           children: [
             Icon(Icons.check_circle, color: Colors.white),
             SizedBox(width: 8),
-            Text('Attendance saved to Firebase! ✅',
+            Text('Attendance saved! ',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
@@ -93,8 +83,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             borderRadius: BorderRadius.circular(12)),
       ),
     );
+  } catch (e) {
+    setState(() => _saving = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,10 +125,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _statCard('📅 Date', _today, Colors.white),
-                _statCard('✅ Present',
+                _statCard(' Date', _today, Colors.white),
+                _statCard(' Present',
                     '$_presentCount', Colors.greenAccent),
-                _statCard('❌ Absent',
+                _statCard(' Absent',
                     '${students.length - _presentCount}',
                     Colors.redAccent),
               ],
@@ -192,7 +190,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      isPresent ? '✅ Present' : '❌ Absent',
+                      isPresent ? ' Present' : ' Absent',
                       style: TextStyle(
                         color: isPresent
                             ? Colors.green
@@ -250,7 +248,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       ),
     );
   }
-
   Widget _statCard(String label, String value, Color valueColor) {
     return Column(
       children: [
