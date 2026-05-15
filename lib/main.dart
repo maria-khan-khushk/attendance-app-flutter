@@ -42,9 +42,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       FirebaseFirestore.instance.collection('attendance');
 
   final List<String> students = [
-    'Ali Ahmed',
+    'Maria khan',
     'Sara Khan',
-    'Bilal Raza',
+    'Sheza khan',
     'Fatima Noor',
     'Usman Tariq',
     'Ayesha Malik',
